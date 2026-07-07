@@ -18,7 +18,7 @@ void LocationPlugin::_bind_methods() {
     ClassDB::bind_method(D_METHOD("StartLocationService"), &LocationPlugin::StartLocationService);
     ClassDB::bind_method(D_METHOD("StopLocationService"), &LocationPlugin::StopLocationService);
     ClassDB::bind_method(D_METHOD("ShowLocationAlert"), &LocationPlugin::ShowLocationAlert);
-    ADD_SIGNAL(MethodInfo(SIGNAL_LOCATION_UPDATED,PropertyInfo(Variant::FLOAT, "Latitude"),PropertyInfo(Variant::FLOAT, "Longitude")));
+    ADD_SIGNAL(MethodInfo(SIGNAL_LOCATION_UPDATED,PropertyInfo(Variant::FLOAT, "Latitude"),PropertyInfo(Variant::FLOAT, "Longitude"),PropertyInfo(Variant::FLOAT, "Accuracy"),PropertyInfo(Variant::FLOAT, "Timestamp")));
     ADD_SIGNAL(MethodInfo(SIGNAL_AUTH_CHANGED,PropertyInfo(Variant::INT, "AuthStat")));
     ADD_SIGNAL(MethodInfo(SIGNAL_LOCATION_SERVICE_STATUS,PropertyInfo(Variant::INT, "LocStat")));
     ADD_SIGNAL(MethodInfo(SIGNAL_DIALOGUE_RESULT,PropertyInfo(Variant::INT, "dialogue_Result")));

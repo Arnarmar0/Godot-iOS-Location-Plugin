@@ -9,12 +9,17 @@
 - (void)requestLocationAuthorization {
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
-    [self.locationManager requestWhenInUseAuthorization];
+    // Always (not just when-in-use) so fixes keep coming with the screen locked / app
+    // backgrounded — the GPS spike's key test. Requires the "location" UIBackgroundMode.
+    [self.locationManager requestAlwaysAuthorization];
 }
 
 - (void)startUpdatingLocation {
     if ([CLLocationManager locationServicesEnabled]) {
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+        // Keep updating in the background and don't let iOS auto-pause a walking session.
+        self.locationManager.allowsBackgroundLocationUpdates = YES;
+        self.locationManager.pausesLocationUpdatesAutomatically = NO;
         [self.locationManager startUpdatingLocation];
         LocationPlugin::get_singleton()->emit_signal(SIGNAL_LOCATION_SERVICE_STATUS,LocationStatus::InUse);
         return;
@@ -87,9 +92,15 @@
 #pragma mark - CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
-    CLLocation *currentLocation = locations.lastObject;
-    self.currentLocation = currentLocation.coordinate;
-    LocationPlugin::get_singleton()->emit_signal(SIGNAL_LOCATION_UPDATED, self.currentLocation.latitude, self.currentLocation.longitude);
+    CLLocation *loc = locations.lastObject;
+    self.currentLocation = loc.coordinate;
+    // Also forward horizontalAccuracy (meters; < 0 = invalid fix) and the fix timestamp
+    // (unix seconds, device clock) — the accuracy metric the GPS spike scores on.
+    LocationPlugin::get_singleton()->emit_signal(SIGNAL_LOCATION_UPDATED,
+        loc.coordinate.latitude,
+        loc.coordinate.longitude,
+        (double)loc.horizontalAccuracy,
+        loc.timestamp.timeIntervalSince1970);
 }
 
 

@@ -1,7 +1,7 @@
 class_name LocationIOS
 extends Node
 
-signal location_updated(Latitude:float,Longitude:float)
+signal location_updated(Latitude:float,Longitude:float,Accuracy:float,Timestamp:float)
 signal location_status_updated(location_status:LocationServiceStatus)
 signal authorization_status_updated(authorization_status:AuthorizationStatus)
 signal dialogue_appeal_result(result:int)#0=cancel  1=ok
@@ -32,7 +32,7 @@ func begin_ios_location_serivce():
 	if current_authorization_status & AuthorizationStatus.Authorizied:
 		StartLocationSerivce()
 	else:
-		authorization_status_changed.connect(func(s:AuthorizationStatus):
+		authorization_status_updated.connect(func(s:AuthorizationStatus):
 			if s & AuthorizationStatus.Authorizied:
 				StartLocationSerivce()
 			)
@@ -56,7 +56,7 @@ func _ready():
 		location_plugin.connect("DialogueResult",_dialogue_appeal_result)
 
 		#optional: show Location Permission Appeal dialogue if the user denied location access.
-		authorization_status_changed.connect(func(s:AuthorizationStatus):
+		authorization_status_updated.connect(func(s:AuthorizationStatus):
 			if s == AuthorizationStatus.Denied:
 				ShowLocationPermissionAppeal()
 		)
@@ -65,8 +65,8 @@ func _ready():
 		printerr("Failed to initialization IOS Location Plugin")
 	pass # Replace with function body.
 	
-func _location_updated(lat:float,lon:float):
-	location_updated.emit(lat,lon)
+func _location_updated(lat:float,lon:float,accuracy:float,timestamp:float):
+	location_updated.emit(lat,lon,accuracy,timestamp)
 
 func _authorization_status_updated(status:int):
 	authorization_status_updated.emit(status)
@@ -90,7 +90,7 @@ func StartLocationSerivce():
 func StopLocationSerivce() -> void:
 	get_plugin().StopLocationService()
 
-# The resulting signal of this call will be sent to authorization_status_changed.
+# The resulting signal of this call will be sent to authorization_status_updated.
 # also call to get the current_location_service_status as a signal update
 func AskLocationPermission() -> void:
 	get_plugin().AskLocationAccess()

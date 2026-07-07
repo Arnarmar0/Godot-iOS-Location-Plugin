@@ -10,6 +10,8 @@
 #import "Location_plugin_impl.h"
 #import "LocationService.h"
 #import <UIKit/UIKit.h>
+// Godot 4.7 de-tangled its headers: ClassDB / D_METHOD are no longer pulled in via object.h.
+#include "core/object/class_db.h"
 
 static LocationService* location_service=nullptr;
 

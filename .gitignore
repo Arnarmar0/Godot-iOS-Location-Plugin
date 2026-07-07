@@ -36,3 +36,9 @@ DerivedData/
 #bin/*
 .vscode/*
 .github/*
+
+## Build inputs — regenerated, never commit (see spikes/godot-gps/FORK_PATCH.md in StepQuest)
+# Godot engine source, shallow-cloned to supply headers (~425 MB)
+/godot/
+# Generated engine headers per target version (~65 MB), produced by `scons ... vulkan=no`
+/extracted_headers/godot_*/
